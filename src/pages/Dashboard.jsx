@@ -18,7 +18,7 @@ const Dashboard = () => {
   const fetchUserData = async () => {
     try {
       const userId = localStorage.getItem("user_id")
-      const res = await axios.get(`http://localhost:4300/api/v1/users/obtain-user-information/${userId}`, { withCredentials: true });
+      const res = await axios.get(`/users/obtain-user-information/${userId}`, { withCredentials: true });
       console.log(res)
       setUserInfo(res.data);
     } catch (err) {
