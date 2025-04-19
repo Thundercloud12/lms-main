@@ -25,7 +25,7 @@ function AdminSignup() {
     setSubmit(true);
 
     try {
-      await axios.post("http://localhost:4300/api/v1/users/admin-signup", {
+      await axios.post("/api/v1/users/admin-signup", {
         fullname,
         username,
         email,
