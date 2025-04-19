@@ -15,6 +15,7 @@ const Navbar = ({ setShowChangePasswordModal }) => {
   const dispatch = useDispatch();
 
   const { user, token, role } = useSelector((state) => state.auth);
+  console.log(token)
   const isLoggedIn = !!token;
 
   const handleLogout = () => {
