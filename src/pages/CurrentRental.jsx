@@ -17,7 +17,7 @@ const CurrentRental = () => {
       setLoading(true);
       const userId = localStorage.getItem("user_id");
       const { data } = await axios.get(
-        `http://localhost:4300/api/v1/users/my-rentals/${userId}`,
+        `/users/my-rentals/${userId}`,
         { withCredentials: true }
       );
 
