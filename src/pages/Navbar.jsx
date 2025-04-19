@@ -1,62 +1,55 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import Lottie from "lottie-react";
 import navvAnimation from "../assets/reading.json";
 import { useTheme } from "../context/ThemeContext";
-import axios from "axios";
+import axios from '../utils/axios';
+import { useSelector } from "react-redux";
 
 const Navbar = ({ setShowChangePasswordModal }) => {
   const { darkMode, setDarkMode } = useTheme();
-  const navigate = useNavigate();
-  const location = useLocation();
+
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated); // 👈 move this to top
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
   const [role, setRole] = useState("");
-
-  const checkAuth = async () => {
-    const token = localStorage.getItem("token");
-    const userId = localStorage.getItem("user_id");
-    const userRole = localStorage.getItem("role");
-
-    if (!token || !userId) {
-      setIsLoggedIn(false);
-      setUser(null);
-      return;
-    }
-
-    setIsLoggedIn(true);
-    setRole(userRole);
-
-    try {
-      const res = await axios.get(`/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(res.data);
-    } catch (err) {
-      console.error("Error fetching user:", err);
-      setIsLoggedIn(false);
-      setUser(null);
-    }
-  };
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("user_id");
+      const userRole = localStorage.getItem("role");
+
+      if (!isAuthenticated || !token) {
+        setIsLoggedIn(false); // 👈 fix here (was: isLoggedIn(false))
+        return;
+      }
+
+      setIsLoggedIn(true);
+      setRole(userRole);
+
+      try {
+        const res = await axios.get(`/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data);
+      } catch (err) {
+        console.error("Failed to fetch user", err);
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
     checkAuth();
-  }, [location.pathname]); // 🔄 Recheck on route change
-
-  useEffect(() => {
-    // 🔁 Sync across tabs/windows
-    const handleStorageChange = () => checkAuth();
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
     localStorage.clear();
     setIsLoggedIn(false);
-    setUser(null);
     navigate("/login");
   };
 
@@ -74,16 +67,16 @@ const Navbar = ({ setShowChangePasswordModal }) => {
       }`}
     >
       <div className="navbar max-w-7xl mx-auto px-6 py-4 font-[Oxygen]">
+        {/* Logo + Title + Lottie */}
         <div className="flex items-center gap-4">
           <img src="/logo.png" alt="Logo" className="h-12 w-auto" />
-          <h1 className="text-3xl font-bold tracking-tight whitespace-nowrap">
-            Library System
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight whitespace-nowrap">Library System</h1>
           <div className="h-10 w-28 p-1 rounded-b-2xl bg-gradient-to-br from-[#facc15] via-[#f59e0b] to-[#d97706] shadow-lg animate-pulse hover:scale-105 transition-transform duration-300">
-            <Lottie animationData={navvAnimation} loop />
+            <Lottie animationData={navvAnimation} loop={true} />
           </div>
         </div>
 
+        {/* Nav Links */}
         <div className="hidden lg:flex gap-6 text-lg ml-auto">
           <HoverLink to="/" label="Home" dark={darkMode} />
           {isLoggedIn && (
@@ -100,15 +93,15 @@ const Navbar = ({ setShowChangePasswordModal }) => {
           <HoverLink to="/support" label="Support" dark={darkMode} />
         </div>
 
+        {/* Right Section */}
         <div className="flex items-center gap-4 ml-4">
-          <button
-            onClick={toggleDark}
-            className="btn btn-ghost btn-circle"
-            aria-label="Toggle Dark Mode"
-          >
+
+          {/* Dark Mode Toggle */}
+          <button onClick={toggleDark} className="btn btn-ghost btn-circle" aria-label="Toggle Dark Mode">
             {darkMode ? <Sun size={22} /> : <Moon size={22} />}
           </button>
 
+          {/* Avatar / Auth */}
           {isLoggedIn && user ? (
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
@@ -132,10 +125,7 @@ const Navbar = ({ setShowChangePasswordModal }) => {
                   <span className="text-sm">{user.email}</span>
                 </li>
                 <li>
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-sm bg-[#4a3628] text-white hover:bg-[#322317]"
-                  >
+                  <button onClick={handleLogout} className="btn btn-sm bg-[#4a3628] text-white hover:bg-[#322317]">
                     Logout
                   </button>
                 </li>
@@ -167,6 +157,9 @@ const Navbar = ({ setShowChangePasswordModal }) => {
           )}
         </div>
       </div>
+
+      {/* Change Password Modal */}
+
     </motion.header>
   );
 };
@@ -174,7 +167,7 @@ const Navbar = ({ setShowChangePasswordModal }) => {
 const HoverLink = ({ to, label, dark }) => (
   <Link
     to={to}
-    className={`relative group transition duration-300 ${
+    className={`relative transition duration-300 ${
       dark ? "text-white" : "text-[#4a3628]"
     }`}
   >
