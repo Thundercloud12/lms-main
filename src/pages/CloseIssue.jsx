@@ -16,7 +16,7 @@ const CloseIssue = () => {
   const fetchCollectedIssues = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("http://localhost:4300/api/v1/users/rentals/collected");
+      const { data } = await axios.get("/users/rentals/collected");
       setIssues(data);
     } catch (error) {
       console.error("Error fetching collected issues:", error);
@@ -28,7 +28,7 @@ const CloseIssue = () => {
   const closeIssue = async () => {
     try {
       if (!selectedIssue) return;
-      await axios.put(`http://localhost:4300/api/v1/users/rentals/close/${selectedIssue._id}`);
+      await axios.put(`/users/rentals/close/${selectedIssue._id}`);
       setSelectedIssue(null);
       fetchCollectedIssues();
     } catch (error) {
