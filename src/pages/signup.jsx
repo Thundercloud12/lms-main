@@ -50,7 +50,7 @@ function Signup() {
     console.log(idCardImage)
 
     try {
-      await axios.post("http://localhost:4300/api/v1/users/register", formData, {
+      await axios.post("/users/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (progressEvent) => {
           const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
