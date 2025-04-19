@@ -25,7 +25,7 @@ const handleSubmit = async (e) => {
 
   try {
     const response = await axios.post(
-      "http://localhost:4300/api/v1/users/login",
+      "/users/login",
       { username, password },
       { withCredentials: true }
     );
