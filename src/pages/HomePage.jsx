@@ -29,7 +29,7 @@ export default function HomePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:4300/api/v1/stats")
+      .get("/stats")
       .then((res) => {
         setStats(res.data);
         setLoadingStats(false);
