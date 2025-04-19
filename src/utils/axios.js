@@ -4,7 +4,7 @@ import  store  from "../store/store";
 import { logout } from '../slices/authSlice';
 
 const instance = axios.create({
-  baseURL: 'http://localhost:4300/api/v1',
+  baseURL: 'https://web-drive-ir4q.onrender.com/api/v1',
   withCredentials: true,
 });
 
