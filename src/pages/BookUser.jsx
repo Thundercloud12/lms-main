@@ -16,7 +16,7 @@ const BooksUser = () => {
 
   const fetchBooks = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/users/books");
+      const res = await axios.get("/users/books");
       console.log(res);
       
       setBooks(res.data || []);
@@ -33,7 +33,7 @@ const BooksUser = () => {
       console.log(token);
       
       await axios.post(
-        "http://localhost:4300/api/v1/users/rentals/issue",
+        "/users/rentals/issue",
         { ISBN: selectedBook.ISBN },
         {
           headers: {
