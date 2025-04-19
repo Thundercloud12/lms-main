@@ -21,7 +21,7 @@ function AdminKey() {
 
     try {
       const response = await axios.post(
-        `http://localhost:4300/api/v1/users/login/admin/${id}`, // ✅ pass ID to backend
+        `/users/login/admin/${id}`, // ✅ pass ID to backend
         { orgKey },
         { withCredentials: true }
       );
