@@ -15,7 +15,7 @@ const IssueAdmin = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get("http://localhost:4300/api/v1/users/rentals/pending");
+      const { data } = await axios.get("/users/rentals/pending");
       setRequests(data);
     } catch (error) {
       console.error("Error fetching requests", error);
@@ -30,7 +30,7 @@ const IssueAdmin = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.patch(`http://localhost:4300/api/v1/users/rentals/update-status/${id}`, {
+      await axios.patch(`/users/rentals/update-status/${id}`, {
         status: newStatus,
       });
       fetchRequests();
