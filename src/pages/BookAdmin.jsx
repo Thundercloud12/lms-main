@@ -21,7 +21,7 @@ const BooksAdmin = () => {
   const deleteBook = async (ISBN) => {
     setLoading(true);
     try {
-      const res = await axios.delete("http://localhost:4300/api/v1/users/delete-book", {
+      const res = await axios.delete("/users/delete-book", {
         data: { ISBN },
         withCredentials: true
       });
