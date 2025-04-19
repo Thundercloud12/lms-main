@@ -15,7 +15,7 @@ const UserVerification = () => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4300/api/v1/users/fetch-notverified-users"
+          "/users/fetch-notverified-users"
         );
         console.log(response.data.users)
         setUsers(response.data.users || []);
@@ -38,7 +38,7 @@ const UserVerification = () => {
   const handleVerify = async (feesReceiptNo, email) => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:4300/api/v1/users/verify-signed-up-user", {
+      await axios.post("/users/verify-signed-up-user", {
         feesReceiptNo,
         email,
       });
