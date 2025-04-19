@@ -17,10 +17,8 @@ const Navbar = ({ setShowChangePasswordModal }) => {
   const [loggedIn,setIsLoggedIn] = useState(false);
 
   const { user, token, role } = useSelector((state) => state.auth);
-  console.log(token)
-  if(token){
-    setIsLoggedIn(true);
-  }
+  const isLoggedIn = !!token;
+  console.log(isLoggedIn);
 
   const handleLogout = () => {
     localStorage.clear(); // Optional: only if you store token in localStorage
