@@ -47,7 +47,7 @@ const AdminDashboard = () => {
 
   const fetchUnverifiedUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/users/fetch-notverified-users");
+      const res = await axios.get("/users/fetch-notverified-users");
       console.log(res.data)
       setUnverifiedUsers(res.data?.users || []);
     } catch (err) {
@@ -82,7 +82,7 @@ const AdminDashboard = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("http://localhost:4300/api/v1/stats");
+      const res = await axios.get("/stats");
       console.log(res.data)
       setStats(res.data || {});
     } catch (err) {
