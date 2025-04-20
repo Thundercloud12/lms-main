@@ -1,28 +1,57 @@
-import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Moon, Sun } from "lucide-react";
+import { Bell, Moon, Sun } from "lucide-react";
 import Lottie from "lottie-react";
 import navvAnimation from "../assets/reading.json";
 import { useTheme } from "../context/ThemeContext";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../slices/authSlice";
-import {useState} from "react"
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 const Navbar = ({ setShowChangePasswordModal }) => {
   const { darkMode, setDarkMode } = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
-  const dispatch = useDispatch();
-  const [loggedIn,setIsLoggedIn] = useState(false);
 
-  const { user, token, role } = useSelector((state) => state.auth);
-  const isLoggedIn = useSelector((state) => !!state.auth.token);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [role, setRole] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const userId = localStorage.getItem("user_id");
+        const userRole = localStorage.getItem("role");
+
+        if (!token || !isAuthenticated) {
+          setIsLoggedIn(false);
+          return;
+        }
+
+        setIsLoggedIn(true);
+        setRole(userRole);
+
+        const res = await axios.get(`/api/users/${userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setUser(res.data);
+      } catch (err) {
+        console.error("Auth check failed:", err);
+        setIsLoggedIn(false);
+        setUser(null);
+      }
+    };
+
+    checkAuth();
+  }, [isAuthenticated]);
 
   const handleLogout = () => {
-    localStorage.clear(); // Optional: only if you store token in localStorage
-    dispatch(logout());
+    localStorage.clear();
+    setIsLoggedIn(false);
+    setUser(null);
     navigate("/login");
   };
 
@@ -40,16 +69,16 @@ const Navbar = ({ setShowChangePasswordModal }) => {
       }`}
     >
       <div className="navbar max-w-7xl mx-auto px-6 py-4 font-[Oxygen]">
+        {/* Logo + Title + Lottie */}
         <div className="flex items-center gap-4">
           <img src="/logo.png" alt="Logo" className="h-12 w-auto" />
-          <h1 className="text-3xl font-bold tracking-tight whitespace-nowrap">
-            Library System
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight whitespace-nowrap">Library System</h1>
           <div className="h-10 w-28 p-1 rounded-b-2xl bg-gradient-to-br from-[#facc15] via-[#f59e0b] to-[#d97706] shadow-lg animate-pulse hover:scale-105 transition-transform duration-300">
-            <Lottie animationData={navvAnimation} loop />
+            <Lottie animationData={navvAnimation} loop={true} />
           </div>
         </div>
 
+        {/* Nav Links */}
         <div className="hidden lg:flex gap-6 text-lg ml-auto">
           <HoverLink to="/" label="Home" dark={darkMode} />
           {isLoggedIn && (
@@ -57,7 +86,7 @@ const Navbar = ({ setShowChangePasswordModal }) => {
               to={
                 role === "admin"
                   ? "/admin-login"
-                  : `/dashboard/${user?.user_id}`
+                  : `/dashboard/${localStorage.getItem("user_id")}`
               }
               label="Dashboard"
               dark={darkMode}
@@ -66,22 +95,17 @@ const Navbar = ({ setShowChangePasswordModal }) => {
           <HoverLink to="/support" label="Support" dark={darkMode} />
         </div>
 
+        {/* Right Section */}
         <div className="flex items-center gap-4 ml-4">
-          <button
-            onClick={toggleDark}
-            className="btn btn-ghost btn-circle"
-            aria-label="Toggle Dark Mode"
-          >
+          {/* Dark Mode Toggle */}
+          <button onClick={toggleDark} className="btn btn-ghost btn-circle" aria-label="Toggle Dark Mode">
             {darkMode ? <Sun size={22} /> : <Moon size={22} />}
           </button>
 
+          {/* Avatar / Auth */}
           {isLoggedIn && user ? (
             <div className="dropdown dropdown-end">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-circle avatar"
-              >
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
                 <div className="w-10 rounded-full border-2 border-white">
                   <img
                     src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.fullName || "User"}`}
@@ -92,24 +116,17 @@ const Navbar = ({ setShowChangePasswordModal }) => {
               <ul
                 tabIndex={0}
                 className={`mt-3 z-[1] p-4 shadow menu menu-sm dropdown-content rounded-box w-52 ${
-                  darkMode
-                    ? "bg-[#2b2b2b] text-white"
-                    : "bg-white text-[#4a3628]"
+                  darkMode ? "bg-[#2b2b2b] text-white" : "bg-white text-[#4a3628]"
                 }`}
               >
                 <li>
-                  <span className="text-sm font-semibold">
-                    {user.fullName}
-                  </span>
+                  <span className="text-sm font-semibold">{user.fullName}</span>
                 </li>
                 <li>
                   <span className="text-sm">{user.email}</span>
                 </li>
                 <li>
-                  <button
-                    onClick={handleLogout}
-                    className="btn btn-sm bg-[#4a3628] text-white hover:bg-[#322317]"
-                  >
+                  <button onClick={handleLogout} className="btn btn-sm bg-[#4a3628] text-white hover:bg-[#322317]">
                     Logout
                   </button>
                 </li>
@@ -148,9 +165,9 @@ const Navbar = ({ setShowChangePasswordModal }) => {
 const HoverLink = ({ to, label, dark }) => (
   <Link
     to={to}
-    className={`relative group transition duration-300 ${
+    className={`relative transition duration-300 ${
       dark ? "text-white" : "text-[#4a3628]"
-    }`}
+    } group`}
   >
     {label}
     <span
