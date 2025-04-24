@@ -25,9 +25,6 @@ const Navbar = ({ setShowChangePasswordModal }) => {
   const toggleDark = () => setDarkMode((prev) => !prev);
 
   useEffect(() => {
-    if (!token) {
-      navigate("/login");
-    }
     console.log("Auth state changed in Navbar:", { user, token, role });
   }, [token, navigate]); // watch token
 
