@@ -76,27 +76,12 @@ const Navbar = ({ setShowChangePasswordModal }) => {
 
           {token ? (
             <div className="dropdown dropdown-end">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-circle avatar"
-              >
-                <div className="w-10 rounded-full border-2 border-white">
-                  <img
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${user.fullName || "User"}`}
-                    alt="User"
-                  />
-                </div>
-              </div>
               <ul
                 tabIndex={0}
                 className={`mt-3 z-[1] p-4 shadow menu menu-sm dropdown-content rounded-box w-52 ${
                   darkMode ? "bg-[#2b2b2b] text-white" : "bg-white text-[#4a3628]"
                 }`}
               >
-                <li>
-                  <span className="text-sm font-semibold">{user.fullName}</span>
-                </li>
                 <li>
                   <span className="text-sm">{user.email}</span>
                 </li>
