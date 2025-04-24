@@ -83,9 +83,6 @@ const Navbar = ({ setShowChangePasswordModal }) => {
                 }`}
               >
                 <li>
-                  <span className="text-sm">{user.email}</span>
-                </li>
-                <li>
                   <button
                     onClick={handleLogout}
                     className="btn btn-sm bg-[#4a3628] text-white hover:bg-[#322317]"
