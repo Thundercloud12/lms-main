@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
@@ -7,26 +7,33 @@ import navvAnimation from "../assets/reading.json";
 import { useTheme } from "../context/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/authSlice";
-import {useState} from "react"
 
 const Navbar = ({ setShowChangePasswordModal }) => {
   const { darkMode, setDarkMode } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
-  const [loggedIn,setIsLoggedIn] = useState(false);
 
-  const { user, token, role } = useSelector((state) => state.auth);
-  const isLoggedIn = !!token;
-
+  const { user, token, role, isAuthenticated } = useSelector((state) => state.auth);
 
   const handleLogout = () => {
-    localStorage.clear(); 
+    localStorage.clear();
     dispatch(logout());
     navigate("/login");
   };
 
   const toggleDark = () => setDarkMode((prev) => !prev);
+
+  // ✅ Automatically redirect or re-render when auth changes
+  useEffect(() => {
+    // Optional: Redirect to login page on logout
+    if (!token) {
+      navigate("/login");
+    }
+
+    // Debug: See auth state changes in console
+    console.log("Auth state changed in Navbar:", { user, token, role });
+  }, [token, navigate]); // watch token
 
   return (
     <motion.header
@@ -52,13 +59,9 @@ const Navbar = ({ setShowChangePasswordModal }) => {
 
         <div className="hidden lg:flex gap-6 text-lg ml-auto">
           <HoverLink to="/" label="Home" dark={darkMode} />
-          {isLoggedIn && (
+          {token && user && (
             <HoverLink
-              to={
-                role === "admin"
-                  ? "/admin-login"
-                  : `/dashboard/${user?.user_id}`
-              }
+              to={role === "admin" ? "/admin-login" : `/dashboard/${user?.user_id}`}
               label="Dashboard"
               dark={darkMode}
             />
@@ -75,7 +78,7 @@ const Navbar = ({ setShowChangePasswordModal }) => {
             {darkMode ? <Sun size={22} /> : <Moon size={22} />}
           </button>
 
-          {isLoggedIn && user ? (
+          {token && user ? (
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
@@ -92,15 +95,11 @@ const Navbar = ({ setShowChangePasswordModal }) => {
               <ul
                 tabIndex={0}
                 className={`mt-3 z-[1] p-4 shadow menu menu-sm dropdown-content rounded-box w-52 ${
-                  darkMode
-                    ? "bg-[#2b2b2b] text-white"
-                    : "bg-white text-[#4a3628]"
+                  darkMode ? "bg-[#2b2b2b] text-white" : "bg-white text-[#4a3628]"
                 }`}
               >
                 <li>
-                  <span className="text-sm font-semibold">
-                    {user.fullName}
-                  </span>
+                  <span className="text-sm font-semibold">{user.fullName}</span>
                 </li>
                 <li>
                   <span className="text-sm">{user.email}</span>
