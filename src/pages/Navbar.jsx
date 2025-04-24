@@ -24,14 +24,10 @@ const Navbar = ({ setShowChangePasswordModal }) => {
 
   const toggleDark = () => setDarkMode((prev) => !prev);
 
-  // ✅ Automatically redirect or re-render when auth changes
   useEffect(() => {
-    // Optional: Redirect to login page on logout
     if (!token) {
       navigate("/login");
     }
-
-    // Debug: See auth state changes in console
     console.log("Auth state changed in Navbar:", { user, token, role });
   }, [token, navigate]); // watch token
 
@@ -78,7 +74,7 @@ const Navbar = ({ setShowChangePasswordModal }) => {
             {darkMode ? <Sun size={22} /> : <Moon size={22} />}
           </button>
 
-          {token && user ? (
+          {token ? (
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
