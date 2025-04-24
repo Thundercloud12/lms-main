@@ -71,7 +71,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        "http://localhost:4300/api/v1/users/change-password",
+        "/users/change-password",
         { oldPassword, newPassword },
         {
           headers: {
